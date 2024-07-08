@@ -1,0 +1,14 @@
+MAS pacman {
+
+	infrastructure: Centralised // no distribution, the whole MAS runs in the same host
+
+	environment: env.Arena2DEnvironment()
+
+	agents: // which agents partecipates the MAS?
+		//rescuer rescuer_agent;
+		//lost lost_agent;
+		pacman pacman_agent;
+
+	aslSourcePath: // where to find agents' source code
+		"src/main/asl";
+}

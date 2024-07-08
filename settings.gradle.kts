@@ -10,6 +10,7 @@ rootProject.name = "ise-lab-code-jason"
 
 //include("directoryname_module")
 include("pacman")
+include("helloworld")
 //Add every module you want here!
 
 
