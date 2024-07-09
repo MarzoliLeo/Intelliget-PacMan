@@ -8,11 +8,13 @@ public class PacmanGame {
         SwingUtilities.invokeLater(() -> {
             JFrame frame = new JFrame("Pacman Game");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-            frame.setSize(800, 600);
             frame.setLayout(new BorderLayout());
 
-            PacmanPanel gamePanel = new PacmanPanel();
+            PacmanMap pacmanMap = new PacmanMap();
+            PacmanPanel gamePanel = new PacmanPanel(pacmanMap.getMatrix());
             frame.add(gamePanel, BorderLayout.CENTER);
+
+            frame.pack(); //adjust the size based on the grid.
 
             frame.setVisible(true);
         });
