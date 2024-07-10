@@ -7,6 +7,7 @@ public class PacmanPanel extends JPanel {
     private static final int GRID_SIZE = 25;
     private static final int CELL_SIZE = 25;
     private boolean[][] walls = new boolean[GRID_SIZE][GRID_SIZE];
+    private boolean[][] scorePoints = new boolean[GRID_SIZE][GRID_SIZE];
     private Point pacmanSphere;
 
     public PacmanPanel(int[][] gridMatrix) {
@@ -15,6 +16,7 @@ public class PacmanPanel extends JPanel {
         // Initialize walls and yellowSphere
         initializeWalls(gridMatrix);
         initializeYellowSphere();
+        generateScorePoints(0.2); // 20% probability for a score point at each non-wall cell.
     }
 
     private void initializeWalls(int[][] gridMatrix) {
@@ -38,6 +40,16 @@ public class PacmanPanel extends JPanel {
         pacmanSphere = new Point(x, y);
     }
 
+    private void generateScorePoints(double probability) {
+        for (int i = 0; i < GRID_SIZE; i++) {
+            for (int j = 0; j < GRID_SIZE; j++) {
+                if (!walls[i][j] && Math.random() < probability) {
+                    scorePoints[i][j] = true;
+                }
+            }
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -47,6 +59,7 @@ public class PacmanPanel extends JPanel {
     private void drawGrid(Graphics g) {
         for (int row = 0; row < GRID_SIZE; row++) {
             for (int col = 0; col < GRID_SIZE; col++) {
+                //draw walls.
                 if (walls[row][col]) {
                     g.setColor(Color.BLUE);
                 } else {
@@ -56,6 +69,13 @@ public class PacmanPanel extends JPanel {
                 g.setColor(Color.BLACK);
                 g.drawRect(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
 
+                //draw points.
+                if (scorePoints[row][col]) {
+                    g.setColor(Color.lightGray);
+                    g.fillOval(col * CELL_SIZE + CELL_SIZE / 4, row * CELL_SIZE + CELL_SIZE / 4, CELL_SIZE / 2, CELL_SIZE / 2);
+                }
+
+                //draw pacman.
                 if (pacmanSphere.x == row && pacmanSphere.y == col) {
                     g.setColor(Color.YELLOW);
                     g.fillOval(col * CELL_SIZE, row * CELL_SIZE, CELL_SIZE, CELL_SIZE);
