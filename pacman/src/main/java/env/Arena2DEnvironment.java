@@ -32,8 +32,9 @@ public class Arena2DEnvironment extends Environment {
 
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
-    private PacmanPanel pacmanPanel;
     private PacmanGame pacmanGame;
+    private PacmanLogic pacmanLogic;
+    private PacmanModel pacmanModel;
 
     @Override
     public void init(final String[] args) {
@@ -47,6 +48,18 @@ public class Arena2DEnvironment extends Environment {
 
         pacmanGame = new PacmanGame();
         pacmanGame.main(null);
+        //pacmanLogic = new PacmanLogic(pacmanModel.getWalls(), pacmanModel.getPacmanSphere());
+
+    }
+
+    //actions that the agent can perform.
+    @Override
+    public boolean executeAction(String agName, Structure action) {
+        if (action.getFunctor().equals("move")) {
+            //TODO NOTARE CHE PUOI USARE PACMAN LOGIC PERCHE' FAI TUTTO DENTRO pacmanGAME. (guarda il flusso di esecuzione per capire).
+            return pacmanLogic.move(Direction.valueOf(action.getTerm(0).toString().toUpperCase()));
+        }
+        return false;
     }
 
 }

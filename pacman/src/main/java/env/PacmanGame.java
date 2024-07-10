@@ -10,8 +10,10 @@ public class PacmanGame {
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
 
-            PacmanMap pacmanMap = new PacmanMap();
-            PacmanPanel gamePanel = new PacmanPanel(pacmanMap.getMatrix());
+            PacmanMap pacmanMap = new PacmanMap(); //set up of map.
+            PacmanModel pacmanModel = new PacmanModel(pacmanMap.getMatrix()); //load the model data.
+            PacmanPanel gamePanel = new PacmanPanel(pacmanModel); // draw the GUI.
+
             frame.add(gamePanel, BorderLayout.CENTER);
 
             frame.pack(); //adjust the size based on the grid.

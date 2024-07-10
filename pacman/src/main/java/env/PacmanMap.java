@@ -1,7 +1,7 @@
 package env;
 
 public class PacmanMap {
-    private static final int GRID_SIZE = 25;
+    private static final int GRID_SIZE = 25; //TODO Questo non dovrebbe stare qui, ma dovrebbe essere il model. Spostare tutta la classe in model?
     private char[][] mapMatrix;
     private int[][] gridMatrix = new int[GRID_SIZE][GRID_SIZE];
 
