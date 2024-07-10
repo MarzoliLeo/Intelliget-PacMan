@@ -8,6 +8,7 @@ public class PacmanPanel extends JPanel {
     private static final int CELL_SIZE = 25;
     private boolean[][] walls = new boolean[GRID_SIZE][GRID_SIZE];
     private boolean[][] scorePoints = new boolean[GRID_SIZE][GRID_SIZE];
+    private boolean[][] powerUps = new boolean[GRID_SIZE][GRID_SIZE];
     private Point pacmanSphere;
 
     public PacmanPanel(int[][] gridMatrix) {
@@ -17,6 +18,7 @@ public class PacmanPanel extends JPanel {
         initializeWalls(gridMatrix);
         initializeYellowSphere();
         generateScorePoints(0.2); // 20% probability for a score point at each non-wall cell.
+        generatePowerUps(6); // Generate a maximum of 6 power-ups
     }
 
     private void initializeWalls(int[][] gridMatrix) {
@@ -50,6 +52,19 @@ public class PacmanPanel extends JPanel {
         }
     }
 
+    private void generatePowerUps(int maxPowerUps) {
+        int count = 0;
+        while (count < maxPowerUps) {
+            int i = (int) (Math.random() * GRID_SIZE);
+            int j = (int) (Math.random() * GRID_SIZE);
+
+            if (!walls[i][j] && !scorePoints[i][j] && !powerUps[i][j]) {
+                powerUps[i][j] = true;
+                count++;
+            }
+        }
+    }
+
     @Override
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -73,6 +88,12 @@ public class PacmanPanel extends JPanel {
                 if (scorePoints[row][col]) {
                     g.setColor(Color.lightGray);
                     g.fillOval(col * CELL_SIZE + CELL_SIZE / 4, row * CELL_SIZE + CELL_SIZE / 4, CELL_SIZE / 2, CELL_SIZE / 2);
+                }
+
+                //draw powerups.
+                if (powerUps[row][col]) {
+                    g.setColor(Color.GREEN);
+                    g.fillOval(col * CELL_SIZE + CELL_SIZE / 8, row * CELL_SIZE + CELL_SIZE / 8, CELL_SIZE * 3 / 4, CELL_SIZE * 3 / 4);
                 }
 
                 //draw pacman.
