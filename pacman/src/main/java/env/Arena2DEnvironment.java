@@ -34,6 +34,7 @@ public class Arena2DEnvironment extends Environment {
 
     private PacmanGame pacmanGame;
     private PacmanLogic pacmanLogic;
+    private PacmanMap pacmanMap;
     private PacmanModel pacmanModel;
 
     @Override
@@ -48,18 +49,55 @@ public class Arena2DEnvironment extends Environment {
 
         pacmanGame = new PacmanGame();
         pacmanGame.main(null);
-        //pacmanLogic = new PacmanLogic(pacmanModel.getWalls(), pacmanModel.getPacmanSphere());
+        pacmanMap = new PacmanMap(); //set up of map.
+        pacmanModel = new PacmanModel(pacmanMap.getMatrix()); //load the model data.
+        pacmanLogic = new PacmanLogic(pacmanModel);
 
     }
+
 
     //actions that the agent can perform.
     @Override
     public boolean executeAction(String agName, Structure action) {
-        if (action.getFunctor().equals("move")) {
-            //TODO NOTARE CHE PUOI USARE PACMAN LOGIC PERCHE' FAI TUTTO DENTRO pacmanGAME. (guarda il flusso di esecuzione per capire).
-            return pacmanLogic.move(Direction.valueOf(action.getTerm(0).toString().toUpperCase()));
+        if (pacmanLogic == null) {
+            logger.warning("PacmanLogic is null. Initialization error?");
+            return false;
         }
-        return false;
+
+        boolean moved = false;
+        if (action.getFunctor().equals("move")) {
+            Direction direction = Direction.random();
+            if (!action.getTerm(0).toString().equalsIgnoreCase("random")) {
+                direction = Direction.valueOf(action.getTerm(0).toString().toUpperCase());
+            }
+            logger.info("Agent " + agName + " is attempting to move in direction: " + direction);
+            moved = pacmanLogic.move(direction);
+        }
+
+        if (moved) {
+            informAgsEnvironmentChanged();
+            return true;  // Action succeeded
+        } else {
+            logger.warning("Action " + action + " failed for agent " + agName);
+            return false;  // Action failed
+        }
     }
+
+
+
+   /* @Override
+    public void updatePercepts() {
+        clearPercepts();
+        int x = pacmanModel.getPacmanSphere().x;
+        int y = pacmanModel.getPacmanSphere().y;
+        addPercept(Literal.parseLiteral("position(" + x + "," + y + ")"));
+    }*/
+
+    @Override
+    public void stop() {
+        super.stop();
+        pacmanGame.stopGame(); // Stop the Pacman game when the environment stops
+    }
+
 
 }

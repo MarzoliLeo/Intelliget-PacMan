@@ -4,9 +4,13 @@ import javax.swing.*;
 import java.awt.*;
 
 public class PacmanGame {
+
+    //TODO questo andrebbe tutto dentro il metodo Init di Arena2DEnvironment per non essere così brutto.
+    private static JFrame frame;
+
     public static void main(String[] args) {
         SwingUtilities.invokeLater(() -> {
-            JFrame frame = new JFrame("Pacman Game");
+            frame = new JFrame("Pacman Game");
             frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
             frame.setLayout(new BorderLayout());
 
@@ -20,5 +24,12 @@ public class PacmanGame {
 
             frame.setVisible(true);
         });
+    }
+
+
+    public static void stopGame() {
+        if (frame != null) {
+            frame.dispose();
+        }
     }
 }

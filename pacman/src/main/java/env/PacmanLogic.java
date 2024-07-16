@@ -27,7 +27,7 @@ public class PacmanLogic {
                 break;
         }
 
-        if (newX >= 0 && newX < pacmanModel.getGridSize() && newY >= 0 && newY < pacmanModel.getGridSize() && !pacmanModel.getWalls()[newX][newY]) {
+        if (isValidMove(newX, newY)) {
             pacmanModel.getPacmanSphere().x = newX;
             pacmanModel.getPacmanSphere().y = newY;
             return true;
@@ -35,4 +35,9 @@ public class PacmanLogic {
 
         return false;
     }
+
+    public boolean isValidMove(int newX, int newY) {
+        return newX >= 0 && newX < pacmanModel.getGridSize() && newY >= 0 && newY < pacmanModel.getGridSize() && !pacmanModel.getWalls()[newX][newY];
+    }
+
 }
