@@ -1,5 +1,3 @@
-/* Initial beliefs and rules */
-
 /* Initial goals */
 !start.
 
@@ -11,14 +9,17 @@
 
 +!move(random)[source(self)] <-
     .print("Attempting to move randomly");
-    move(random); // Questo viene letto dall'environment (immaginalo come una send all'env).
+    move(random); // Questo viene letto dall'environment nelle action.(immaginalo come una send all'env).
     .wait(1000);  // Wait for a second
     !chooseDirection(NewDirection);
     !move(NewDirection, random).
 
 +!move(Direction, random) <-  // Handle move with random direction
     .print("Moving in direction: ", Direction);
-    move(Direction).
+    move(Direction);
+    .wait(1000);  // Wait for a second
+    !chooseDirection(NewDirection); //crea il loop.
+    !move(NewDirection, random). //crea il loop.
 
 +!move(random) <-  // Handle failure
     .print("Failed to move randomly");

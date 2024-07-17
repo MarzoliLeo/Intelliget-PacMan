@@ -1,17 +1,23 @@
 package env;
 
+import utils.Observer;
+
 import javax.swing.*;
 import java.awt.*;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Logger;
 
-public class PacmanPanel extends JPanel {
+public class PacmanPanel extends JPanel implements Observer {
 
     private PacmanModel pacmanModel;
 
+    static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
+
     public PacmanPanel(PacmanModel pacmanModel) {
         this.pacmanModel = pacmanModel;
+        this.pacmanModel.addObserver(this);
         this.setPreferredSize(new Dimension(pacmanModel.getGridSize() * pacmanModel.getCellSize(), pacmanModel.getGridSize() * pacmanModel.getCellSize()));
     }
-
 
     @Override
     protected void paintComponent(Graphics g) {
@@ -51,5 +57,12 @@ public class PacmanPanel extends JPanel {
                 }
             }
         }
+    }
+
+    @Override
+    public void update() {
+        logger.info("Sono prima di repaint!!!");
+        repaint();
+        logger.info("STO CERCANDO DI DISEGNARE! OOOOOOOO");
     }
 }

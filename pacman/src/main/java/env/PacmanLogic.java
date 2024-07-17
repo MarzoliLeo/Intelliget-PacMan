@@ -1,8 +1,14 @@
 package env;
 
+import java.awt.*;
+import java.util.logging.Logger;
+
+
 public class PacmanLogic {
 
     private PacmanModel pacmanModel;
+
+    static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
     public PacmanLogic(PacmanModel pacmanModel) {
         this.pacmanModel = pacmanModel;
@@ -28,11 +34,14 @@ public class PacmanLogic {
         }
 
         if (isValidMove(newX, newY)) {
-            pacmanModel.getPacmanSphere().x = newX;
-            pacmanModel.getPacmanSphere().y = newY;
+            //pacmanModel.getPacmanSphere().x = newX;
+            //pacmanModel.getPacmanSphere().y = newY;
+            pacmanModel.setPacmanSphere(new Point(newX, newY));
+            logger.info("Move successful to: (" + newX + ", " + newY + ")"); // Debugging statement
             return true;
         }
 
+        logger.info("Invalid move to: (" + newX + ", " + newY + ")"); // Debugging statement
         return false;
     }
 

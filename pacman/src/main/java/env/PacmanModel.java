@@ -1,14 +1,23 @@
 package env;
 
-import java.awt.*;
+import utils.Observer;
+import utils.Subject;
 
-public class PacmanModel {
+import java.util.ArrayList;
+import java.util.List;
+import java.awt.*;
+import java.util.logging.Logger;
+
+public class PacmanModel implements Subject {
     private static final int GRID_SIZE = 25;
     private static final int CELL_SIZE = 25;
     private boolean[][] walls = new boolean[GRID_SIZE][GRID_SIZE];
     private boolean[][] scorePoints = new boolean[GRID_SIZE][GRID_SIZE];
     private boolean[][] powerUps = new boolean[GRID_SIZE][GRID_SIZE];
     private Point pacmanSphere;
+    private List<Observer> observers = new ArrayList<>();
+
+    static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
     public PacmanModel(int[][] gridMatrix) {
         // Initialize walls and yellowSphere
@@ -38,6 +47,8 @@ public class PacmanModel {
         } while (walls[x][y]);
 
         pacmanSphere = new Point(x, y);
+
+        notifyObservers();
     }
 
     private void generateScorePoints(double probability) {
@@ -85,5 +96,34 @@ public class PacmanModel {
 
     public Point getPacmanSphere() {
         return pacmanSphere;
+    }
+
+    /*Pattern Observer methods. */
+    @Override
+    public void addObserver(Observer observer) {
+        observers.add(observer);
+        logger.info("Observer added: " + observer); // Debugging statement
+        logger.warning("Observers notified: " + observers.size()); // Debugging statement
+    }
+
+    @Override
+    public void removeObserver(Observer observer) {
+        observers.remove(observer);
+    }
+
+    @Override
+    public void notifyObservers() {
+        logger.warning("notifyObservers called"); // Debugging statement
+        for (Observer observer : observers) {
+            observer.update();
+            logger.warning("I CALLED UPDATE");
+        }
+        logger.warning("Observers notified: " + observers.size()); // Debugging statement
+    }
+
+
+    public void setPacmanSphere(Point newPoint) {
+        pacmanSphere = newPoint;
+        notifyObservers();
     }
 }

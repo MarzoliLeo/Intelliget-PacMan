@@ -47,11 +47,12 @@ public class Arena2DEnvironment extends Environment {
         this.view = view;
         view.setVisible(true);*/
 
-        pacmanGame = new PacmanGame();
-        pacmanGame.main(null);
         pacmanMap = new PacmanMap(); //set up of map.
         pacmanModel = new PacmanModel(pacmanMap.getMatrix()); //load the model data.
         pacmanLogic = new PacmanLogic(pacmanModel);
+
+        // Start the game with the existing model
+        PacmanGame.startGame(pacmanModel);
 
     }
 
@@ -76,14 +77,14 @@ public class Arena2DEnvironment extends Environment {
 
         if (moved) {
             informAgsEnvironmentChanged();
+            //pacmanModel.notifyObservers();
             return true;  // Action succeeded
         } else {
             logger.warning("Action " + action + " failed for agent " + agName);
             return false;  // Action failed
         }
+
     }
-
-
 
    /* @Override
     public void updatePercepts() {
