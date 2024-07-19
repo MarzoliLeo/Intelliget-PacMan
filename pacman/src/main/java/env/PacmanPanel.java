@@ -23,6 +23,7 @@ public class PacmanPanel extends JPanel implements Observer {
     protected void paintComponent(Graphics g) {
         super.paintComponent(g);
         drawGrid(g);
+        drawScore(g);
     }
 
     private void drawGrid(Graphics g) {
@@ -59,10 +60,14 @@ public class PacmanPanel extends JPanel implements Observer {
         }
     }
 
+    private void drawScore(Graphics g) {
+        g.setColor(Color.BLACK);
+        g.drawString("Score: " + pacmanModel.getScore(), 10, pacmanModel.getGridSize() * pacmanModel.getCellSize() + 20);
+    }
+
+
     @Override
     public void update() {
-        logger.info("Sono prima di repaint!!!");
         repaint();
-        logger.info("STO CERCANDO DI DISEGNARE! OOOOOOOO");
     }
 }

@@ -1,6 +1,5 @@
 package env;
 
-import java.awt.*;
 import java.util.logging.Logger;
 
 
@@ -34,10 +33,9 @@ public class PacmanLogic {
         }
 
         if (isValidMove(newX, newY)) {
-            //pacmanModel.getPacmanSphere().x = newX;
-            //pacmanModel.getPacmanSphere().y = newY;
-            pacmanModel.setPacmanSphere(new Point(newX, newY));
+            pacmanModel.setPacmanSphere(newX, newY);
             logger.info("Move successful to: (" + newX + ", " + newY + ")"); // Debugging statement
+            pacmanModel.consumeScorePoint(newX, newY); // Consuma il punto se presente
             return true;
         }
 

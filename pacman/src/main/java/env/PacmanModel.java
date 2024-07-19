@@ -15,6 +15,7 @@ public class PacmanModel implements Subject {
     private boolean[][] scorePoints = new boolean[GRID_SIZE][GRID_SIZE];
     private boolean[][] powerUps = new boolean[GRID_SIZE][GRID_SIZE];
     private Point pacmanSphere;
+    private int score = 0; // Punteggio iniziale
     private List<Observer> observers = new ArrayList<>();
 
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
@@ -98,12 +99,31 @@ public class PacmanModel implements Subject {
         return pacmanSphere;
     }
 
-    /*Pattern Observer methods. */
+    /* ******************************************************************** */
+    /* Methods used to rapresent score logic. */
+    public int getScore() {
+        return score;
+    }
+
+    public void incrementScore() {
+        score++;
+        logger.info("[Model] Score incremented: " + score);
+        notifyObservers();
+    }
+
+    public void consumeScorePoint(int x, int y) {
+        if (scorePoints[x][y]) {
+            scorePoints[x][y] = false;
+            incrementScore();
+        }
+    }
+
+    /* ******************************************************************** */
+    /* Methods used for pattern Observer. */
     @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
         logger.info("Observer added: " + observer); // Debugging statement
-        logger.warning("Observers notified: " + observers.size()); // Debugging statement
     }
 
     @Override
@@ -113,17 +133,15 @@ public class PacmanModel implements Subject {
 
     @Override
     public void notifyObservers() {
-        logger.warning("notifyObservers called"); // Debugging statement
         for (Observer observer : observers) {
             observer.update();
-            logger.warning("I CALLED UPDATE");
         }
         logger.warning("Observers notified: " + observers.size()); // Debugging statement
     }
 
 
-    public void setPacmanSphere(Point newPoint) {
-        pacmanSphere = newPoint;
+    public void setPacmanSphere(int x, int y) {
+        pacmanSphere = new Point(x, y);
         notifyObservers();
     }
 }
