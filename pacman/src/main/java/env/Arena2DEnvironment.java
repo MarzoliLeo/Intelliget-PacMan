@@ -39,13 +39,6 @@ public class Arena2DEnvironment extends Environment {
 
     @Override
     public void init(final String[] args) {
-        /*this.model = new Arena2DModelImpl(Integer.parseInt(args[0]), Integer.parseInt(args[1]));
-        if (args.length > 2) {
-            model.setSlideProbability(Double.parseDouble(args[2]));
-        }
-        Arena2DGuiView view = new Arena2DGuiView(model);
-        this.view = view;
-        view.setVisible(true);*/
 
         pacmanMap = new PacmanMap(); //set up of map.
         pacmanModel = new PacmanModel(pacmanMap.getMatrix()); //load the model data.
@@ -53,7 +46,6 @@ public class Arena2DEnvironment extends Environment {
 
         // Start the game with the existing model
         PacmanGame.startGame(pacmanModel);
-
     }
 
 
@@ -64,17 +56,20 @@ public class Arena2DEnvironment extends Environment {
             logger.warning("PacmanLogic is null. Initialization error?");
             return false;
         }
-
         boolean moved = false;
         if (action.getFunctor().equals("move")) {
-            Direction direction = Direction.random();
-            if (!action.getTerm(0).toString().equalsIgnoreCase("random")) {
-                direction = Direction.valueOf(action.getTerm(0).toString().toUpperCase());
+            Direction direction;
+            if (action.getTerm(0).toString().equalsIgnoreCase("preferential")) {
+                direction = pacmanLogic.choosePreferredDirection(pacmanModel.getPacmanSphere(), 1); // Using a distance of 1
+            } else {
+                direction = Direction.random();
+                if (!action.getTerm(0).toString().equalsIgnoreCase("random")) {
+                    direction = Direction.valueOf(action.getTerm(0).toString().toUpperCase());
+                }
             }
             logger.info("Agent " + agName + " is attempting to move in direction: " + direction);
             moved = pacmanLogic.move(direction);
         }
-
         if (moved) {
             informAgsEnvironmentChanged();
             //pacmanModel.notifyObservers();
@@ -83,7 +78,6 @@ public class Arena2DEnvironment extends Environment {
             logger.warning("Action " + action + " failed for agent " + agName);
             return false;  // Action failed
         }
-
     }
 
    /* @Override

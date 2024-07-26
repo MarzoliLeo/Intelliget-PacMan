@@ -100,7 +100,7 @@ public class PacmanModel implements Subject {
     }
 
     /* ******************************************************************** */
-    /* Methods used to rapresent score logic. */
+    /* Methods used to represent score logic. */
     public int getScore() {
         return score;
     }
@@ -119,11 +119,40 @@ public class PacmanModel implements Subject {
     }
 
     /* ******************************************************************** */
+    /* Methods used for perceiving the surroundings. */
+
+    public List<Point> getSurroundingCells(Point center, int distance) {
+        List<Point> surroundingCells = new ArrayList<>();
+        int startX = Math.max(center.x - distance, 0);
+        int endX = Math.min(center.x + distance, GRID_SIZE - 1);
+        int startY = Math.max(center.y - distance, 0);
+        int endY = Math.min(center.y + distance, GRID_SIZE - 1);
+
+        for (int x = startX; x <= endX; x++) {
+            for (int y = startY; y <= endY; y++) {
+                if (!(x == center.x && y == center.y)) {
+                    surroundingCells.add(new Point(x, y));
+                }
+            }
+        }
+
+        // Log surrounding cells
+        logger.info("Surrounding cells of (" + center.x + ", " + center.y + "): " + surroundingCells);
+        return surroundingCells;
+    }
+
+    // This one isn't in the getter/setter section because it represents
+    // the checking of a certain point as ScorePoint during the surrounding phase.
+    public boolean isScorePoint(int x, int y) {
+        return scorePoints[x][y];
+    }
+
+    /* ******************************************************************** */
     /* Methods used for pattern Observer. */
     @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
-        logger.info("Observer added: " + observer); // Debugging statement
+        //logger.info("Observer added: " + observer); // Debugging statement
     }
 
     @Override
@@ -136,7 +165,7 @@ public class PacmanModel implements Subject {
         for (Observer observer : observers) {
             observer.update();
         }
-        logger.warning("Observers notified: " + observers.size()); // Debugging statement
+        //logger.warning("Observers notified: " + observers.size()); // Debugging statement
     }
 
 
