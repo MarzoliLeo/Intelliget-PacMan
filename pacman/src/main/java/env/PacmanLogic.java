@@ -7,9 +7,7 @@ import java.util.List;
 
 
 public class PacmanLogic {
-
     private PacmanModel pacmanModel;
-
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
     public PacmanLogic(PacmanModel pacmanModel) {
@@ -17,9 +15,55 @@ public class PacmanLogic {
     }
 
     public boolean move(Direction direction) {
-        int newX = pacmanModel.getPacmanSphere().x;
-        int newY = pacmanModel.getPacmanSphere().y;
+        Point currentPos = pacmanModel.getPacmanSphere();
+        Point newPos = getNewPosition(currentPos, direction);
 
+        if (isValidMove(newPos.x, newPos.y)) {
+            pacmanModel.setPacmanSphere(newPos.x, newPos.y);
+            logger.info("Move successful to: (" + newPos.x + ", " + newPos.y + ")");
+            pacmanModel.consumeScorePoint(newPos.x, newPos.y);
+            return true;
+        }
+        logger.info("Invalid move to: (" + newPos.x + ", " + newPos.y + ")");
+        return false;
+    }
+
+    public boolean isValidMove(int newX, int newY) {
+        return newX >= 0 && newX < pacmanModel.getGridSize() && newY >= 0 && newY < pacmanModel.getGridSize() && !pacmanModel.getWalls()[newX][newY];
+    }
+
+    public Direction choosePreferredDirection(Point currentPos, int distance) {
+        List<Direction> validDirections = new ArrayList<>();
+        Direction preferredDirection = null;
+
+        for (Direction direction : Direction.values()) {
+            Point newPos = getNewPosition(currentPos, direction);
+            if (isValidMove(newPos.x, newPos.y)) {
+                validDirections.add(direction);
+                if (pacmanModel.isScorePoint(newPos.x, newPos.y)) {
+                    preferredDirection = direction;
+                }
+            }
+        }
+
+        if (preferredDirection != null) {
+            logger.info("Preferring direction towards score point: " + preferredDirection);
+            return preferredDirection;
+        }
+
+        if (!validDirections.isEmpty()) {
+            Direction randomValidDirection = validDirections.get((int) (Math.random() * validDirections.size()));
+            logger.info("No score points nearby, moving to a valid direction: " + randomValidDirection);
+            return randomValidDirection;
+        }
+
+        logger.info("No valid moves available, staying in place");
+        return null; // No valid moves available
+    }
+
+    private Point getNewPosition(Point currentPos, Direction direction) {
+        int newX = currentPos.x;
+        int newY = currentPos.y;
         switch (direction) {
             case FORWARD:
                 newX--;
@@ -34,45 +78,6 @@ public class PacmanLogic {
                 newY++;
                 break;
         }
-
-        if (isValidMove(newX, newY)) {
-            pacmanModel.setPacmanSphere(newX, newY);
-            logger.info("Move successful to: (" + newX + ", " + newY + ")");
-            pacmanModel.consumeScorePoint(newX, newY);
-            return true;
-        }
-
-        logger.info("Invalid move to: (" + newX + ", " + newY + ")");
-        return false;
+        return new Point(newX, newY);
     }
-
-    public boolean isValidMove(int newX, int newY) {
-        return newX >= 0 && newX < pacmanModel.getGridSize() && newY >= 0 && newY < pacmanModel.getGridSize() && !pacmanModel.getWalls()[newX][newY];
-    }
-
-    //TODO questi usano POINT dovrebbero usare le coordinate x e y... vediamo poi di refactorizzare.
-    public Direction choosePreferredDirection(Point currentPos, int distance) {
-        List<Point> surroundingCells = pacmanModel.getSurroundingCells(currentPos, distance);
-        for (Point cell : surroundingCells) {
-            if (pacmanModel.isScorePoint(cell.x, cell.y)) {
-                logger.info("Preferring direction towards score point at: (" + cell.x + ", " + cell.y + ")");
-                return getDirectionFromPoints(currentPos, cell);
-            }
-        }
-        logger.info("No score points nearby, moving randomly");
-        return Direction.random(); // Move randomly if no score points are nearby
-    }
-
-    private Direction getDirectionFromPoints(Point start, Point end) {
-        if (end.x < start.x) {
-            return Direction.FORWARD;
-        } else if (end.x > start.x) {
-            return Direction.BACKWARD;
-        } else if (end.y < start.y) {
-            return Direction.LEFT;
-        } else {
-            return Direction.RIGHT;
-        }
-    }
-
 }

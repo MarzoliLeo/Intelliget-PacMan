@@ -67,8 +67,13 @@ public class Arena2DEnvironment extends Environment {
                     direction = Direction.valueOf(action.getTerm(0).toString().toUpperCase());
                 }
             }
-            logger.info("Agent " + agName + " is attempting to move in direction: " + direction);
-            moved = pacmanLogic.move(direction);
+
+            if (direction != null) {
+                logger.info("Agent " + agName + " is attempting to move in direction: " + direction);
+                moved = pacmanLogic.move(direction);
+            } else {
+                logger.warning("No valid moves available for agent " + agName);
+            }
         }
         if (moved) {
             informAgsEnvironmentChanged();
