@@ -118,33 +118,24 @@ public class PacmanModel implements Subject {
         }
     }
 
+    public void consumePowerUp(int x, int y) {
+        if (powerUps[x][y]) {
+            powerUps[x][y] = false;
+            logger.info("[Model] Power-up consumed at: (" + x + ", " + y + ")");
+            // Implement any power-up effects here
+            notifyObservers();
+        }
+    }
+
     /* ******************************************************************** */
     /* Methods used for perceiving the surroundings. */
 
-    public List<Point> getSurroundingCells(Point center, int distance) {
-        List<Point> surroundingCells = new ArrayList<>();
-        int startX = Math.max(center.x - distance, 0);
-        int endX = Math.min(center.x + distance, GRID_SIZE - 1);
-        int startY = Math.max(center.y - distance, 0);
-        int endY = Math.min(center.y + distance, GRID_SIZE - 1);
-
-        for (int x = startX; x <= endX; x++) {
-            for (int y = startY; y <= endY; y++) {
-                if (!(x == center.x && y == center.y)) {
-                    surroundingCells.add(new Point(x, y));
-                }
-            }
-        }
-
-        // Log surrounding cells
-        logger.info("Surrounding cells of (" + center.x + ", " + center.y + "): " + surroundingCells);
-        return surroundingCells;
-    }
-
-    // This one isn't in the getter/setter section because it represents
-    // the checking of a certain point as ScorePoint during the surrounding phase.
     public boolean isScorePoint(int x, int y) {
         return scorePoints[x][y];
+    }
+
+    public boolean isPowerUp(int x, int y) {
+        return powerUps[x][y];
     }
 
     /* ******************************************************************** */

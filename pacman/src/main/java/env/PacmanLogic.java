@@ -22,6 +22,7 @@ public class PacmanLogic {
             pacmanModel.setPacmanSphere(newPos.x, newPos.y);
             logger.info("Move successful to: (" + newPos.x + ", " + newPos.y + ")");
             pacmanModel.consumeScorePoint(newPos.x, newPos.y);
+            pacmanModel.consumePowerUp(newPos.x, newPos.y);
             return true;
         }
         logger.info("Invalid move to: (" + newPos.x + ", " + newPos.y + ")");
@@ -42,6 +43,10 @@ public class PacmanLogic {
                 validDirections.add(direction);
                 if (pacmanModel.isScorePoint(newPos.x, newPos.y)) {
                     preferredDirection = direction;
+                    break; // Prefer score points over power-ups, so break if found
+                }
+                if (pacmanModel.isPowerUp(newPos.x, newPos.y) && preferredDirection == null) {
+                    preferredDirection = direction; // Set preferred direction if it's a power-up
                 }
             }
         }

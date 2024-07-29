@@ -60,6 +60,7 @@ public class PacmanPanel extends JPanel implements Observer {
         }
     }
 
+    //TODO QUESTO E' UNO SCORE NELLA GUI CHE PERO' NON VIENE MOSTRATO DA NESSUNA PARTE, NON SERVE COME PENSAVI TU A TOGLIERE GLI SCOREPOINTS.
     private void drawScore(Graphics g) {
         g.setColor(Color.BLACK);
         g.drawString("Score: " + pacmanModel.getScore(), 10, pacmanModel.getGridSize() * pacmanModel.getCellSize() + 20);

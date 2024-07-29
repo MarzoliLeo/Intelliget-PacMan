@@ -98,6 +98,4 @@ public class Arena2DEnvironment extends Environment {
         super.stop();
         pacmanGame.stopGame(); // Stop the Pacman game when the environment stops
     }
-
-
 }
