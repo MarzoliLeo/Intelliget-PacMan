@@ -87,6 +87,9 @@ public class PacmanLogic {
         return new Point(newX, newY);
     }
 
+    /* ***************************************************** */
+    /* Enemy Logic */
+
     public void moveEnemy(int enemyId, Direction direction) {
         Point currentPos = pacmanModel.getEnemies()[enemyId];
         Point newPos = getNewPosition(currentPos, direction);
@@ -97,4 +100,39 @@ public class PacmanLogic {
             logger.info("[Logic] Invalid move for enemy " + enemyId + " to: (" + newPos.x + ", " + newPos.y + ")");
         }
     }
+
+    public Direction chooseDirectionTowardsPacman(Point enemyPos, Point pacmanPos) {
+        int dx = pacmanPos.x - enemyPos.x;
+        int dy = pacmanPos.y - enemyPos.y;
+
+        Direction preferredDirection = null;
+
+        if (Math.abs(dx) > Math.abs(dy)) {
+            // Prefer horizontal movement
+            preferredDirection = dx > 0 ? Direction.BACKWARD : Direction.FORWARD;
+        } else {
+            // Prefer vertical movement
+            preferredDirection = dy > 0 ? Direction.RIGHT : Direction.LEFT;
+        }
+
+        // Check if the preferred direction is valid
+        if (isValidMove(getNewPosition(enemyPos, preferredDirection).x, getNewPosition(enemyPos, preferredDirection).y)) {
+            return preferredDirection;
+        }
+
+        // If preferred direction is not valid, choose another random valid direction
+        List<Direction> validDirections = new ArrayList<>();
+        for (Direction direction : Direction.values()) {
+            if (isValidMove(getNewPosition(enemyPos, direction).x, getNewPosition(enemyPos, direction).y)) {
+                validDirections.add(direction);
+            }
+        }
+
+        if (!validDirections.isEmpty()) {
+            return validDirections.get((int) (Math.random() * validDirections.size()));
+        }
+
+        return null; // No valid directions available
+    }
+
 }

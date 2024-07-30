@@ -1,3 +1,4 @@
+//pacman_agent.asl
 /* Initial goals */
 !start.
 

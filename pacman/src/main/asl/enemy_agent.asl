@@ -16,16 +16,11 @@
     !init_enemies(3).
 
 +!init_enemies(Id) <-
-    .print("Initializing enemy ", Id);
-    !move_enemy(Id).
-
-+!move_enemy(Id) <-
-    .print("Enemy ", Id, " attempting to move randomly");
-    move_enemy(Id, random);  // Questo viene letto dall'environment nelle action.
+    .print("[ASL] Updating enemy: ", Id);
+    +enemy_position(Id, 0, 0);  // Set initial position (to be updated)
     .wait(1000);  // Wait for a second
-    !move_enemy(Id).  // Loop per il movimento continuo
+    move_enemy(Id, random);
+    !init_enemies(Id).
 
-+enemy_position(EnemyIndex, X, Y) : true <-
-    .print("Enemy ", EnemyIndex, " si trova in posizione: (", X, ", ", Y, ")").
 
 

@@ -5,6 +5,7 @@ import jason.asSyntax.Structure;
 import jason.environment.Environment;
 
 import javax.swing.*;
+import java.awt.*;
 import java.util.Collection;
 import java.util.Random;
 import java.util.logging.Logger;
@@ -70,13 +71,28 @@ public class Arena2DEnvironment extends Environment {
             }
         }
 
-        if (action.getFunctor().equals("move_enemy")) { // Check movement of a specific enemy
+        if (action.getFunctor().equals("move_enemy")) {
             int enemyId = Integer.parseInt(action.getTerm(0).toString());
-            Direction direction;
-            if (action.getTerm(1).toString().equalsIgnoreCase("random")) {
-                direction = Direction.random();
+            Direction direction = Direction.random(); // Default direction if no specific direction is provided
+
+            // Find the enemy's current position and Pacman's position
+            Point enemyPos = pacmanModel.getEnemies()[enemyId];
+            Point pacmanPos = pacmanModel.getPacmanSphere();
+
+            // Check if Pacman is within 5 cells of the enemy
+            if (Math.abs(pacmanPos.x - enemyPos.x) <= 5 && Math.abs(pacmanPos.y - enemyPos.y) <= 5) {
+                // Choose direction towards Pacman
+                direction = pacmanLogic.chooseDirectionTowardsPacman(enemyPos, pacmanPos);
             } else {
-                direction = Direction.valueOf(action.getTerm(1).toString().toUpperCase());
+                // Move randomly if Pacman is not within the range
+                if (action.getTerms().size() > 1) {
+                    String moveType = action.getTerm(1).toString();
+                    if (moveType.equalsIgnoreCase("random")) {
+                        direction = Direction.random();
+                    } else {
+                        direction = Direction.valueOf(moveType.toUpperCase());
+                    }
+                }
             }
 
             if (direction != null) {
@@ -87,6 +103,7 @@ public class Arena2DEnvironment extends Environment {
                 logger.warning("No valid moves available for enemy " + enemyId + " by agent " + agName);
             }
         }
+
 
         if (moved) {
             informAgsEnvironmentChanged();
