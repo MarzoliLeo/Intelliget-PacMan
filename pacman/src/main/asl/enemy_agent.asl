@@ -6,21 +6,26 @@
 
 +!start : true <-
     .print("Ciao siamo i nemici!!");
-    !move_enemies(random).
+    !init_all_enemies.
 
-+!move_enemies(random)[source(self)] <-
-    .print("Enemies are attempting to move randomly");
-    move_enemies(random);  // Questo viene letto dall'environment nelle action.
++!init_all_enemies <-
+    .print("Initializing all enemies.");
+    !init_enemies(0).
+    !init_enemies(1).
+    !init_enemies(2).
+    !init_enemies(3).
+
++!init_enemies(Id) <-
+    .print("Initializing enemy ", Id);
+    !move_enemy(Id).
+
++!move_enemy(Id) <-
+    .print("Enemy ", Id, " attempting to move randomly");
+    move_enemy(Id, random);  // Questo viene letto dall'environment nelle action.
     .wait(1000);  // Wait for a second
-    !move_enemies(random).
+    !move_enemy(Id).  // Loop per il movimento continuo
 
-+!move_enemies(Direction) <-  // Handle move with specified direction
-    .print("Moving enemies in direction: ", Direction);
-    move_enemies(Direction);
-    .wait(1000);  // Wait for a second
-    !move_enemies(random).
-
-+enemy_position(EnemyIndex, X, Y) : true <-  // Questo viene invocato da java (nelle percezioni).
++enemy_position(EnemyIndex, X, Y) : true <-
     .print("Enemy ", EnemyIndex, " si trova in posizione: (", X, ", ", Y, ")").
 
 

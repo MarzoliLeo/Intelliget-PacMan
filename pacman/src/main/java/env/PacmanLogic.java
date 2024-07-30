@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 
+
 public class PacmanLogic {
     private PacmanModel pacmanModel;
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
@@ -86,14 +87,14 @@ public class PacmanLogic {
         return new Point(newX, newY);
     }
 
-    public void moveEnemies(Direction direction) {
-        for (int i = 0; i < pacmanModel.getEnemies().length; i++) {
-            Point currentPos = pacmanModel.getEnemies()[i];
-            Point newPos = getNewPosition(currentPos, direction);
-            if (isValidMove(newPos.x, newPos.y)) {
-                pacmanModel.setEnemyPosition(i, newPos.x, newPos.y);
-                logger.info("[Logic] Enemy " + i + " moved to: (" + newPos.x + ", " + newPos.y + ")");
-            }
+    public void moveEnemy(int enemyId, Direction direction) {
+        Point currentPos = pacmanModel.getEnemies()[enemyId];
+        Point newPos = getNewPosition(currentPos, direction);
+        if (isValidMove(newPos.x, newPos.y)) {
+            pacmanModel.setEnemyPosition(enemyId, newPos.x, newPos.y);
+            logger.info("[Logic] Enemy " + enemyId + " moved to: (" + newPos.x + ", " + newPos.y + ")");
+        } else {
+            logger.info("[Logic] Invalid move for enemy " + enemyId + " to: (" + newPos.x + ", " + newPos.y + ")");
         }
     }
 }

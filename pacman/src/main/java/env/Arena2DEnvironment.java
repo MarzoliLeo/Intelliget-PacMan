@@ -70,20 +70,21 @@ public class Arena2DEnvironment extends Environment {
             }
         }
 
-        if (action.getFunctor().equals("move_enemies")) { // Check movement of enemies
+        if (action.getFunctor().equals("move_enemy")) { // Check movement of a specific enemy
+            int enemyId = Integer.parseInt(action.getTerm(0).toString());
             Direction direction;
-            if (action.getTerm(0).toString().equalsIgnoreCase("random")) {
+            if (action.getTerm(1).toString().equalsIgnoreCase("random")) {
                 direction = Direction.random();
             } else {
-                direction = Direction.valueOf(action.getTerm(0).toString().toUpperCase());
+                direction = Direction.valueOf(action.getTerm(1).toString().toUpperCase());
             }
 
             if (direction != null) {
-                logger.info("Agent " + agName + " is attempting to move enemies in direction: " + direction);
-                pacmanLogic.moveEnemies(direction);
+                logger.info("Agent " + agName + " is attempting to move enemy " + enemyId + " in direction: " + direction);
+                pacmanLogic.moveEnemy(enemyId, direction);
                 moved = true;
             } else {
-                logger.warning("No valid moves available for enemies by agent " + agName);
+                logger.warning("No valid moves available for enemy " + enemyId + " by agent " + agName);
             }
         }
 
