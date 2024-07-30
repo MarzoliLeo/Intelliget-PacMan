@@ -22,11 +22,11 @@ import static env.Direction.*;
 
 public class Arena2DEnvironment extends Environment {
 
-    private static final Random RAND = new Random();
+    public static final int DISTANCE_TO_CHASE_PACMAN = 5;
+    public static final int PACMAN_DIST_TO_CHECK_ENV = 1;
 
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
-    private PacmanGame pacmanGame;
     private PacmanLogic pacmanLogic;
     private PacmanMap pacmanMap;
     private PacmanModel pacmanModel;
@@ -55,7 +55,7 @@ public class Arena2DEnvironment extends Environment {
         if (action.getFunctor().equals("move")) { // Check movement of Pacman
             Direction direction;
             if (action.getTerm(0).toString().equalsIgnoreCase("preferential")) {
-                direction = pacmanLogic.choosePreferredDirection(pacmanModel.getPacmanSphere(), 1); // Using a distance of 1
+                direction = pacmanLogic.choosePreferredDirection(pacmanModel.getPacmanSphere(), PACMAN_DIST_TO_CHECK_ENV); // Using a distance of 1
             } else {
                 direction = Direction.random();
                 if (!action.getTerm(0).toString().equalsIgnoreCase("random")) {
@@ -80,7 +80,7 @@ public class Arena2DEnvironment extends Environment {
             Point pacmanPos = pacmanModel.getPacmanSphere();
 
             // Check if Pacman is within 5 cells of the enemy
-            if (Math.abs(pacmanPos.x - enemyPos.x) <= 5 && Math.abs(pacmanPos.y - enemyPos.y) <= 5) {
+            if (Math.abs(pacmanPos.x - enemyPos.x) <= DISTANCE_TO_CHASE_PACMAN && Math.abs(pacmanPos.y - enemyPos.y) <= DISTANCE_TO_CHASE_PACMAN) {
                 // Choose direction towards Pacman
                 direction = pacmanLogic.chooseDirectionTowardsPacman(enemyPos, pacmanPos);
             } else {
@@ -133,6 +133,6 @@ public class Arena2DEnvironment extends Environment {
     @Override
     public void stop() {
         super.stop();
-        pacmanGame.stopGame(); // Stop the Pacman game when the environment stops
+        PacmanGame.stopGame(); // Stop the Pacman game when the environment stops
     }
 }

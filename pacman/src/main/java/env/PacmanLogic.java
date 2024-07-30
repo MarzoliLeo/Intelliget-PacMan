@@ -1,21 +1,28 @@
 package env;
 
-import java.awt.*;
-import java.util.logging.Logger;
+import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-
-
+import java.util.Random;
+import java.util.logging.Logger;
 
 public class PacmanLogic {
+    public static final double ENEMY_SLIPPERY_PROBABILITY = 0.30;
     private PacmanModel pacmanModel;
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
+    private static final Random RAND = new Random();
+    private volatile boolean gameRunning = true; // Flag per controllare lo stato del gioco
 
     public PacmanLogic(PacmanModel pacmanModel) {
         this.pacmanModel = pacmanModel;
     }
 
     public boolean move(Direction direction) {
+        if (!gameRunning) {
+            logger.info("Game has stopped. No further actions are performed.");
+            return false;
+        }
+
         Point currentPos = pacmanModel.getPacmanSphere();
         Point newPos = getNewPosition(currentPos, direction);
 
@@ -91,17 +98,35 @@ public class PacmanLogic {
     /* Enemy Logic */
 
     public void moveEnemy(int enemyId, Direction direction) {
+        if (!gameRunning) {
+            logger.info("Game has stopped. No further actions are performed.");
+            return;
+        }
+
         Point currentPos = pacmanModel.getEnemies()[enemyId];
         Point newPos = getNewPosition(currentPos, direction);
+
+        if (RAND.nextDouble() < ENEMY_SLIPPERY_PROBABILITY) {
+            logger.info("[Logic] Enemy " + enemyId + " is blocked and remains in place.");
+            // Enemy remains in place, no movement
+            return;
+        }
+
         if (isValidMove(newPos.x, newPos.y)) {
             pacmanModel.setEnemyPosition(enemyId, newPos.x, newPos.y);
             logger.info("[Logic] Enemy " + enemyId + " moved to: (" + newPos.x + ", " + newPos.y + ")");
+            checkPacmanCapture(); // Check if the move results in Pacman capture
         } else {
             logger.info("[Logic] Invalid move for enemy " + enemyId + " to: (" + newPos.x + ", " + newPos.y + ")");
         }
     }
 
     public Direction chooseDirectionTowardsPacman(Point enemyPos, Point pacmanPos) {
+        if (!gameRunning) {
+            logger.info("Game has stopped. No further actions are performed.");
+            return null;
+        }
+
         int dx = pacmanPos.x - enemyPos.x;
         int dy = pacmanPos.y - enemyPos.y;
 
@@ -133,6 +158,19 @@ public class PacmanLogic {
         }
 
         return null; // No valid directions available
+    }
+
+    // Method to check if Pacman has been captured
+    private void checkPacmanCapture() {
+        Point pacmanPos = pacmanModel.getPacmanSphere();
+        for (Point enemyPos : pacmanModel.getEnemies()) {
+            if (pacmanPos.equals(enemyPos)) {
+                logger.info("Pacman has been captured by an enemy!");
+                gameRunning = false; // Impedisci ulteriori azioni
+                PacmanGame.stopGame();
+                return;
+            }
+        }
     }
 
 }
