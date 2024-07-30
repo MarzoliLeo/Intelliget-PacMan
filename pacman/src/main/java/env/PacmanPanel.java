@@ -56,6 +56,14 @@ public class PacmanPanel extends JPanel implements Observer {
                     g.setColor(Color.YELLOW);
                     g.fillOval(col * pacmanModel.getCellSize(), row * pacmanModel.getCellSize(), pacmanModel.getCellSize(), pacmanModel.getCellSize());
                 }
+
+                //draw enemies.
+                for (Point enemy : pacmanModel.getEnemies()) {
+                    if (enemy.x == row && enemy.y == col) {
+                        g.setColor(Color.RED);
+                        g.fillOval(col * pacmanModel.getCellSize(), row * pacmanModel.getCellSize(), pacmanModel.getCellSize(), pacmanModel.getCellSize());
+                    }
+                }
             }
         }
     }

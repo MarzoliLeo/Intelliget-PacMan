@@ -8,6 +8,7 @@ MAS pacman {
 		//rescuer rescuer_agent;
 		//lost lost_agent;
 		pacman pacman_agent;
+		enemy enemy_agent;
 
 	aslSourcePath: // where to find agents' source code
 		"src/main/asl";

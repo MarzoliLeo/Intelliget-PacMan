@@ -23,13 +23,6 @@ public class Arena2DEnvironment extends Environment {
 
     private static final Random RAND = new Random();
 
-    // action literals
-    public static final Literal moveForward = Literal.parseLiteral("move(" + FORWARD.name().toLowerCase() + ")");
-    public static final Literal moveRight = Literal.parseLiteral("move(" + RIGHT.name().toLowerCase() + ")");
-    public static final Literal moveLeft = Literal.parseLiteral("move(" + LEFT.name().toLowerCase() + ")");
-    public static final Literal moveBackward = Literal.parseLiteral("move(" + FORWARD.name().toLowerCase() + ")");
-    public static final Literal moveRandom = Literal.parseLiteral("move(random)");
-
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
     private PacmanGame pacmanGame;
@@ -57,7 +50,8 @@ public class Arena2DEnvironment extends Environment {
             return false;
         }
         boolean moved = false;
-        if (action.getFunctor().equals("move")) {
+
+        if (action.getFunctor().equals("move")) { // Check movement of Pacman
             Direction direction;
             if (action.getTerm(0).toString().equalsIgnoreCase("preferential")) {
                 direction = pacmanLogic.choosePreferredDirection(pacmanModel.getPacmanSphere(), 1); // Using a distance of 1
@@ -75,9 +69,26 @@ public class Arena2DEnvironment extends Environment {
                 logger.warning("No valid moves available for agent " + agName);
             }
         }
+
+        if (action.getFunctor().equals("move_enemies")) { // Check movement of enemies
+            Direction direction;
+            if (action.getTerm(0).toString().equalsIgnoreCase("random")) {
+                direction = Direction.random();
+            } else {
+                direction = Direction.valueOf(action.getTerm(0).toString().toUpperCase());
+            }
+
+            if (direction != null) {
+                logger.info("Agent " + agName + " is attempting to move enemies in direction: " + direction);
+                pacmanLogic.moveEnemies(direction);
+                moved = true;
+            } else {
+                logger.warning("No valid moves available for enemies by agent " + agName);
+            }
+        }
+
         if (moved) {
             informAgsEnvironmentChanged();
-            //pacmanModel.notifyObservers();
             return true;  // Action succeeded
         } else {
             logger.warning("Action " + action + " failed for agent " + agName);
@@ -85,13 +96,21 @@ public class Arena2DEnvironment extends Environment {
         }
     }
 
-   /* @Override
+
+
+    /*@Override
     public void updatePercepts() {
         clearPercepts();
         int x = pacmanModel.getPacmanSphere().x;
         int y = pacmanModel.getPacmanSphere().y;
         addPercept(Literal.parseLiteral("position(" + x + "," + y + ")"));
+
+        for (int i = 0; i < pacmanModel.getEnemies().length; i++) {
+            Point enemy = pacmanModel.getEnemies()[i];
+            addPercept(Literal.parseLiteral("enemyPosition(" + i + "," + enemy.x + "," + enemy.y + ")"));
+        }
     }*/
+
 
     @Override
     public void stop() {

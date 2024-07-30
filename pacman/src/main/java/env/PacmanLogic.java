@@ -85,4 +85,15 @@ public class PacmanLogic {
         }
         return new Point(newX, newY);
     }
+
+    public void moveEnemies(Direction direction) {
+        for (int i = 0; i < pacmanModel.getEnemies().length; i++) {
+            Point currentPos = pacmanModel.getEnemies()[i];
+            Point newPos = getNewPosition(currentPos, direction);
+            if (isValidMove(newPos.x, newPos.y)) {
+                pacmanModel.setEnemyPosition(i, newPos.x, newPos.y);
+                logger.info("[Logic] Enemy " + i + " moved to: (" + newPos.x + ", " + newPos.y + ")");
+            }
+        }
+    }
 }

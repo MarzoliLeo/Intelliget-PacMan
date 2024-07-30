@@ -15,6 +15,7 @@ public class PacmanModel implements Subject {
     private boolean[][] scorePoints = new boolean[GRID_SIZE][GRID_SIZE];
     private boolean[][] powerUps = new boolean[GRID_SIZE][GRID_SIZE];
     private Point pacmanSphere;
+    private Point[] enemies;
     private int score = 0; // Punteggio iniziale
     private List<Observer> observers = new ArrayList<>();
 
@@ -24,6 +25,7 @@ public class PacmanModel implements Subject {
         // Initialize walls and yellowSphere
         initializeWalls(gridMatrix);
         initializeYellowSphere();
+        initializeEnemies(4); // Initialize 4 enemies.
         generateScorePoints(0.2); // 20% probability for a score point at each non-wall cell.
         generatePowerUps(6); // Generate a maximum of 6 power-ups
     }
@@ -49,6 +51,19 @@ public class PacmanModel implements Subject {
 
         pacmanSphere = new Point(x, y);
 
+        notifyObservers();
+    }
+
+    private void initializeEnemies(int numEnemies) {
+        enemies = new Point[numEnemies];
+        for (int i = 0; i < numEnemies; i++) {
+            int x, y;
+            do {
+                x = (int) (Math.random() * GRID_SIZE);
+                y = (int) (Math.random() * GRID_SIZE);
+            } while (walls[x][y] || (x == pacmanSphere.x && y == pacmanSphere.y));
+            enemies[i] = new Point(x, y);
+        }
         notifyObservers();
     }
 
@@ -97,6 +112,9 @@ public class PacmanModel implements Subject {
 
     public Point getPacmanSphere() {
         return pacmanSphere;
+    }
+    public Point[] getEnemies() {
+        return enemies;
     }
 
     /* ******************************************************************** */
@@ -159,9 +177,14 @@ public class PacmanModel implements Subject {
         //logger.warning("Observers notified: " + observers.size()); // Debugging statement
     }
 
-
+    //TODO put a comment here to describe.
     public void setPacmanSphere(int x, int y) {
         pacmanSphere = new Point(x, y);
+        notifyObservers();
+    }
+
+    public void setEnemyPosition(int index, int x, int y) {
+        enemies[index] = new Point(x, y);
         notifyObservers();
     }
 }
