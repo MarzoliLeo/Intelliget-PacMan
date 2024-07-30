@@ -27,7 +27,7 @@ public class PacmanModel implements Subject {
         initializeYellowSphere();
         initializeEnemies(4); // Initialize 4 enemies.
         generateScorePoints(0.2); // 20% probability for a score point at each non-wall cell.
-        generatePowerUps(6); // Generate a maximum of 6 power-ups
+        generatePowerUps(30); // Generate a maximum of 6 power-ups
     }
 
 
@@ -90,6 +90,7 @@ public class PacmanModel implements Subject {
         }
     }
 
+
     public int getGridSize() {
         return GRID_SIZE;
     }
@@ -123,6 +124,11 @@ public class PacmanModel implements Subject {
         return score;
     }
 
+    public void addScore(int points) {
+        this.score += points;
+        logger.info("[Model]Score updated: " + this.score);
+    }
+
     public void incrementScore() {
         score++;
         logger.info("[Model] Score incremented: " + score);
@@ -136,13 +142,15 @@ public class PacmanModel implements Subject {
         }
     }
 
-    public void consumePowerUp(int x, int y) {
+    public boolean consumePowerUp(int x, int y) {
         if (powerUps[x][y]) {
             powerUps[x][y] = false;
             logger.info("[Model] Power-up consumed at: (" + x + ", " + y + ")");
             // Implement any power-up effects here
             notifyObservers();
+            return true;
         }
+        return false;
     }
 
     /* ******************************************************************** */
