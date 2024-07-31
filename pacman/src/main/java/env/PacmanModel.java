@@ -6,6 +6,8 @@ import utils.Subject;
 import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class PacmanModel implements Subject {
@@ -18,6 +20,7 @@ public class PacmanModel implements Subject {
     private Point[] enemies;
     private int score = 0; // Punteggio iniziale
     private List<Observer> observers = new ArrayList<>();
+    private Map<Integer, Long> enemyDisableTimes = new ConcurrentHashMap<>();
 
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
@@ -163,6 +166,26 @@ public class PacmanModel implements Subject {
     public boolean isPowerUp(int x, int y) {
         return powerUps[x][y];
     }
+
+    /* ******************************************************************** */
+    /* Methods to handle enemy features. */
+
+    public boolean isEnemyDisabled(int enemyId) {
+        Long disableTime = enemyDisableTimes.get(enemyId);
+        return disableTime != null && disableTime > System.currentTimeMillis();
+    }
+
+    public void disableEnemy(int enemyId, long duration) {
+        long disableTime = System.currentTimeMillis() + duration;
+        enemyDisableTimes.put(enemyId, disableTime);
+        notifyObservers();
+    }
+
+    public void enableEnemy(int enemyId) {
+        enemyDisableTimes.remove(enemyId);
+        notifyObservers();
+    }
+
 
     /* ******************************************************************** */
     /* Methods used for pattern Observer. */

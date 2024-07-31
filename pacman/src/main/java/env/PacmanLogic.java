@@ -3,9 +3,7 @@ package env;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,7 +19,6 @@ public class PacmanLogic {
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
     private static final Random RAND = new Random();
     private volatile boolean gameRunning = true; // Flag per controllare lo stato del gioco
-    private Map<Integer, Long> enemyDisableTimes = new ConcurrentHashMap<>();
     private long powerUpEndTime = 0; // Tempo di fine del power-up
     private ScheduledExecutorService powerUpScheduler = Executors.newSingleThreadScheduledExecutor();
 
@@ -61,13 +58,14 @@ public class PacmanLogic {
         }, 15, TimeUnit.SECONDS);
     }
 
+
     private void disableEnemy(int enemyId) {
         long disableTime = System.currentTimeMillis() + 10000; // 10 secondi di disattivazione
-        enemyDisableTimes.put(enemyId, disableTime);
+        pacmanModel.disableEnemy(enemyId, disableTime);
         logger.info("Enemy " + enemyId + " disabilitato per 10 secondi.");
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.schedule(() -> {
-            enemyDisableTimes.remove(enemyId);
+            pacmanModel.enableEnemy(enemyId); // Riabilita il nemico tramite il modello
             logger.info("Enemy " + enemyId + " riabilitato.");
         }, 10, TimeUnit.SECONDS);
         scheduler.shutdown();
@@ -139,7 +137,7 @@ public class PacmanLogic {
             return;
         }
 
-        if (isEnemyDisabled(enemyId)) {
+        if (pacmanModel.isEnemyDisabled(enemyId)) {
             logger.info("[Logic] Enemy " + enemyId + " is disabled and cannot move.");
             return;
         }
@@ -201,12 +199,7 @@ public class PacmanLogic {
         return null; // No valid directions available
     }
 
-    private boolean isEnemyDisabled(int enemyId) {
-        Long disableTime = enemyDisableTimes.get(enemyId);
-        return disableTime != null && disableTime > System.currentTimeMillis();
-    }
 
-    // Method to check if Pacman has been captured
     private void checkPacmanCapture() {
         Point pacmanPos = pacmanModel.getPacmanSphere();
         for (int i = 0; i < pacmanModel.getEnemies().length; i++) {
