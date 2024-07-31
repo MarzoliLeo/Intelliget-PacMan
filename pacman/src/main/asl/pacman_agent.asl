@@ -11,7 +11,7 @@
 +!move(preferential)[source(self)] <-
     .print("Attempting to move preferentially");
     move(preferential); // Questo viene letto dall'environment nelle action.(immaginalo come una send all'env).
-    .wait(1000);  // Wait for a second
+    .wait(500);  // Wait for a second
     !move(preferential).
 
 +!move(Direction) <-  // Handle move with specified direction

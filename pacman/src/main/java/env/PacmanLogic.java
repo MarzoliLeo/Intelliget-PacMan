@@ -14,12 +14,9 @@ import java.util.*;
 import java.util.concurrent.*;
 
 public class PacmanLogic {
-    public static final double ENEMY_SLIPPERY_PROBABILITY = 0.30;
     private PacmanModel pacmanModel;
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
-    private static final Random RAND = new Random();
-    private volatile boolean gameRunning = true; // Flag per controllare lo stato del gioco
-    private long powerUpEndTime = 0; // Tempo di fine del power-up
+    private volatile boolean gameRunning = true;
     private ScheduledExecutorService powerUpScheduler = Executors.newSingleThreadScheduledExecutor();
 
     public PacmanLogic(PacmanModel pacmanModel) {
@@ -39,6 +36,14 @@ public class PacmanLogic {
             pacmanModel.setPacmanSphere(newPos.x, newPos.y);
             logger.info("Move successful to: (" + newPos.x + ", " + newPos.y + ")");
             pacmanModel.consumeScorePoint(newPos.x, newPos.y);
+
+            // Check victory condition.
+            if (pacmanModel.areAllScorePointsCollected()) {
+                logger.info("Victory! All score points collected.");
+                PacmanGame.stopGame();
+                return true;
+            }
+
             if (pacmanModel.consumePowerUp(newPos.x, newPos.y)) {
                 handlePowerUp();
             }
@@ -50,24 +55,23 @@ public class PacmanLogic {
     }
 
     private void handlePowerUp() {
-        powerUpEndTime = System.currentTimeMillis() + 15000; // Power-up dura 15 secondi
+        pacmanModel.setPowerUpEndTime(System.currentTimeMillis() + PacmanModel.DURATION_POWERUP); // Power-up dura 15 secondi
         logger.info("Power-up attivato. Scade tra 15 secondi.");
         powerUpScheduler.schedule(() -> {
-            powerUpEndTime = 0;
+            pacmanModel.setPowerUpEndTime(0);
             logger.info("Power-up scaduto.");
-        }, 15, TimeUnit.SECONDS);
+        }, PacmanModel.DURATION_POWERUP, TimeUnit.MILLISECONDS);
     }
 
-
     private void disableEnemy(int enemyId) {
-        long disableTime = System.currentTimeMillis() + 10000; // 10 secondi di disattivazione
+        long disableTime = System.currentTimeMillis() + PacmanModel.DURATION_DISABLE_ENEMIES; // 10 secondi di disattivazione
         pacmanModel.disableEnemy(enemyId, disableTime);
         logger.info("Enemy " + enemyId + " disabilitato per 10 secondi.");
         ScheduledExecutorService scheduler = Executors.newSingleThreadScheduledExecutor();
         scheduler.schedule(() -> {
             pacmanModel.enableEnemy(enemyId); // Riabilita il nemico tramite il modello
             logger.info("Enemy " + enemyId + " riabilitato.");
-        }, 10, TimeUnit.SECONDS);
+        }, PacmanModel.DURATION_DISABLE_ENEMIES, TimeUnit.MILLISECONDS);
         scheduler.shutdown();
     }
 
@@ -105,7 +109,7 @@ public class PacmanLogic {
         }
 
         logger.info("No valid moves available, staying in place");
-        return null; // No valid moves available
+        return null;
     }
 
     private Point getNewPosition(Point currentPos, Direction direction) {
@@ -145,7 +149,7 @@ public class PacmanLogic {
         Point currentPos = pacmanModel.getEnemies()[enemyId];
         Point newPos = getNewPosition(currentPos, direction);
 
-        if (RAND.nextDouble() < ENEMY_SLIPPERY_PROBABILITY) {
+        if (pacmanModel.isEnemySlippery()) {
             logger.info("[Logic] Enemy " + enemyId + " is blocked and remains in place.");
             // Enemy remains in place, no movement
             return;
@@ -179,12 +183,10 @@ public class PacmanLogic {
             preferredDirection = dy > 0 ? Direction.RIGHT : Direction.LEFT;
         }
 
-        // Check if the preferred direction is valid
         if (isValidMove(getNewPosition(enemyPos, preferredDirection).x, getNewPosition(enemyPos, preferredDirection).y)) {
             return preferredDirection;
         }
 
-        // If preferred direction is not valid, choose another random valid direction
         List<Direction> validDirections = new ArrayList<>();
         for (Direction direction : Direction.values()) {
             if (isValidMove(getNewPosition(enemyPos, direction).x, getNewPosition(enemyPos, direction).y)) {
@@ -196,22 +198,21 @@ public class PacmanLogic {
             return validDirections.get((int) (Math.random() * validDirections.size()));
         }
 
-        return null; // No valid directions available
+        return null;
     }
-
 
     private void checkPacmanCapture() {
         Point pacmanPos = pacmanModel.getPacmanSphere();
         for (int i = 0; i < pacmanModel.getEnemies().length; i++) {
             Point enemyPos = pacmanModel.getEnemies()[i];
             if (pacmanPos.equals(enemyPos)) {
-                if (powerUpEndTime > System.currentTimeMillis()) {
+                if (pacmanModel.getPowerUpEndTime() > System.currentTimeMillis()) {
                     disableEnemy(i);
                     pacmanModel.addScore(100);
                     logger.info("Enemy " + i + " disabilitato e 100 punti aggiunti.");
                 } else {
                     logger.info("Pacman has been captured by an enemy!");
-                    gameRunning = false; // Impedisci ulteriori azioni
+                    gameRunning = false;
                     PacmanGame.stopGame();
                     return;
                 }
@@ -219,3 +220,4 @@ public class PacmanLogic {
         }
     }
 }
+

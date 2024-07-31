@@ -7,30 +7,37 @@ import java.util.ArrayList;
 import java.util.List;
 import java.awt.*;
 import java.util.Map;
+import java.util.Random;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class PacmanModel implements Subject {
+    public static final double PROBABILITY_TO_SPAWN_SCOREPOINTS = 0.2;
+    public static final int NUMBER_OF_POWERUPS = 30;
     private static final int GRID_SIZE = 25;
     private static final int CELL_SIZE = 25;
+    public static final double ENEMY_SLIPPERY_PROBABILITY = 0.30;
+    public static final int DURATION_POWERUP = 15000;
+    public static final int DURATION_DISABLE_ENEMIES = 10000;
+    private static final Random RAND = new Random();
+    public static final int NUM_ENEMIES = 4;
+    private long powerUpEndTime = 0;
     private boolean[][] walls = new boolean[GRID_SIZE][GRID_SIZE];
     private boolean[][] scorePoints = new boolean[GRID_SIZE][GRID_SIZE];
     private boolean[][] powerUps = new boolean[GRID_SIZE][GRID_SIZE];
     private Point pacmanSphere;
     private Point[] enemies;
-    private int score = 0; // Punteggio iniziale
+    private int score = 0;
     private List<Observer> observers = new ArrayList<>();
     private Map<Integer, Long> enemyDisableTimes = new ConcurrentHashMap<>();
-
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
     public PacmanModel(int[][] gridMatrix) {
-        // Initialize walls and yellowSphere
         initializeWalls(gridMatrix);
         initializeYellowSphere();
-        initializeEnemies(4); // Initialize 4 enemies.
-        generateScorePoints(0.2); // 20% probability for a score point at each non-wall cell.
-        generatePowerUps(30); // Generate a maximum of 6 power-ups
+        initializeEnemies(NUM_ENEMIES);
+        generateScorePoints(PROBABILITY_TO_SPAWN_SCOREPOINTS);
+        generatePowerUps(NUMBER_OF_POWERUPS);
     }
 
 
@@ -120,9 +127,13 @@ public class PacmanModel implements Subject {
     public Point[] getEnemies() {
         return enemies;
     }
+    public long getPowerUpEndTime() {
+        return powerUpEndTime;
+    }
 
     /* ******************************************************************** */
     /* Methods used to represent score logic. */
+
     public int getScore() {
         return score;
     }
@@ -186,13 +197,16 @@ public class PacmanModel implements Subject {
         notifyObservers();
     }
 
+    public boolean isEnemySlippery() {
+        return RAND.nextDouble() < ENEMY_SLIPPERY_PROBABILITY;
+    }
+
 
     /* ******************************************************************** */
     /* Methods used for pattern Observer. */
     @Override
     public void addObserver(Observer observer) {
         observers.add(observer);
-        //logger.info("Observer added: " + observer); // Debugging statement
     }
 
     @Override
@@ -205,10 +219,11 @@ public class PacmanModel implements Subject {
         for (Observer observer : observers) {
             observer.update();
         }
-        //logger.warning("Observers notified: " + observers.size()); // Debugging statement
     }
 
-    //TODO put a comment here to describe.
+    /* ******************************************************************** */
+    /* Methods to set up the movement logic. */
+
     public void setPacmanSphere(int x, int y) {
         pacmanSphere = new Point(x, y);
         notifyObservers();
@@ -217,5 +232,24 @@ public class PacmanModel implements Subject {
     public void setEnemyPosition(int index, int x, int y) {
         enemies[index] = new Point(x, y);
         notifyObservers();
+    }
+
+    public void setPowerUpEndTime(long powerUpEndTime) {
+        this.powerUpEndTime = powerUpEndTime;
+    }
+
+
+    /* ******************************************************************** */
+    /* Method to check victory condition. */
+
+    public boolean areAllScorePointsCollected() {
+        for (int row = 0; row < getGridSize(); row++) {
+            for (int col = 0; col < getGridSize(); col++) {
+                if (getScorePoints()[row][col]) {
+                    return false;
+                }
+            }
+        }
+        return true;
     }
 }
