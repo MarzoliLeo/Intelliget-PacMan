@@ -18,7 +18,7 @@
 +!init_enemies(Id) <-
     .print("[ASL] Updating enemy: ", Id);
     +enemy_position(Id, 0, 0);  // Set initial position (to be updated)
-    .wait(1000);  // Wait for a second
+    .wait(500);
     move_enemy(Id, random);
     !init_enemies(Id).
 

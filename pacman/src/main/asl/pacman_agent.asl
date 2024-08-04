@@ -17,10 +17,8 @@
 +!move(Direction) <-  // Handle move with specified direction
     .print("Moving in direction: ", Direction);
     move(Direction);
-    .wait(1000);  // Wait for a second
+    .wait(500);  // Wait for a second
     !move(preferential).
 
-+position(X, Y) : true <- // Questo viene invocato da java (nelle percezioni) poiché non ha il !. È un belief in "ascolto".
-    .print("Pacman si trova in posizione: (", X, ", ", Y, ")").
 
 

@@ -1,16 +1,10 @@
 package env;
 
-import jason.asSyntax.Literal;
 import jason.asSyntax.Structure;
 import jason.environment.Environment;
-
-import javax.swing.*;
 import java.awt.*;
-import java.util.Collection;
-import java.util.Random;
 import java.util.logging.Logger;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
+
 
 import static env.Direction.*;
 /**
@@ -23,7 +17,7 @@ import static env.Direction.*;
 public class Arena2DEnvironment extends Environment {
 
     public static final int DISTANCE_TO_CHASE_PACMAN = 5;
-    public static final int PACMAN_DIST_TO_CHECK_ENV = 1;
+    public static final int PACMAN_DIST_TO_CHECK_ENV = 2;
 
     static Logger logger = Logger.getLogger(Arena2DEnvironment.class.getName());
 
@@ -115,24 +109,9 @@ public class Arena2DEnvironment extends Environment {
     }
 
 
-
-    /*@Override
-    public void updatePercepts() {
-        clearPercepts();
-        int x = pacmanModel.getPacmanSphere().x;
-        int y = pacmanModel.getPacmanSphere().y;
-        addPercept(Literal.parseLiteral("position(" + x + "," + y + ")"));
-
-        for (int i = 0; i < pacmanModel.getEnemies().length; i++) {
-            Point enemy = pacmanModel.getEnemies()[i];
-            addPercept(Literal.parseLiteral("enemyPosition(" + i + "," + enemy.x + "," + enemy.y + ")"));
-        }
-    }*/
-
-
     @Override
     public void stop() {
         super.stop();
-        PacmanGame.stopGame(); // Stop the Pacman game when the environment stops
+        PacmanGame.stopGame();
     }
 }

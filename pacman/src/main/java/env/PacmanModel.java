@@ -12,8 +12,8 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.logging.Logger;
 
 public class PacmanModel implements Subject {
-    public static final double PROBABILITY_TO_SPAWN_SCOREPOINTS = 0.2;
-    public static final int NUMBER_OF_POWERUPS = 30;
+    public static final double PROBABILITY_TO_SPAWN_SCOREPOINTS = 0.3;
+    public static final int NUMBER_OF_POWERUPS = 6;
     private static final int GRID_SIZE = 25;
     private static final int CELL_SIZE = 25;
     public static final double ENEMY_SLIPPERY_PROBABILITY = 0.30;
