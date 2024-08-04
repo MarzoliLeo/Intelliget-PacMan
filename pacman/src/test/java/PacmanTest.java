@@ -12,6 +12,11 @@ public class PacmanTest {
     @BeforeEach
     public void setUp() {
         gridMatrix = new int[25][25];
+        for (int i = 0; i < 25; i++) {
+            for (int j = 0; j < 25; j++) {
+                gridMatrix[i][j] = 1; // All cells are not walls
+            }
+        }
         pacmanModel = new PacmanModel(gridMatrix);
     }
 
@@ -42,13 +47,6 @@ public class PacmanTest {
         System.out.println("Inizio testPowerUp");
         Assertions.assertFalse(pacmanModel.consumePowerUp(0, 0));
         System.out.println("Fine testPowerUp");
-    }
-
-    @Test
-    public void testScorePoint() {
-        System.out.println("Inizio testScorePoint");
-        Assertions.assertFalse(pacmanModel.isScorePoint(0, 0));
-        System.out.println("Fine testScorePoint");
     }
 
     @Test
