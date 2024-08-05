@@ -3,15 +3,11 @@ package env;
 import java.awt.Point;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Random;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 import java.util.logging.Logger;
 
-
-import java.util.*;
-import java.util.concurrent.*;
 
 public class PacmanLogic {
     private PacmanModel pacmanModel;
